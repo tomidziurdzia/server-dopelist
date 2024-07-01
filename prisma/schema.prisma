@@ -12,3 +12,48 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id       String     @id @default(uuid())
+  email    String     @unique
+  name     String?
+  lastname String?
+  image    String?
+  dope     Dope[]
+  dopelist Dopelist[]
+}
+
+model Dope {
+  id          String     @id @default(uuid())
+  link        String
+  name        String?
+  description String?
+  image       String?
+  createdAt   DateTime   @default(now())
+  user        User       @relation(fields: [userId], references: [id])
+  userId      String
+  dopelist    Dopelist[]
+  // @relation(fields: [dopelistId], references: [id])
+}
+
+model Dopelist {
+  id        String   @id @default(uuid())
+  name      String
+  image     String?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  dope      Dope[]
+  // @relation(fields: [dopeId], references: [id])
+}
+
+// model CategoriesOnPosts {
+//   post       Post     @relation(fields: [postId], references: [id])
+//   postId     Int // relation scalar field (used in the `@relation` attribute above)
+//   category   Category @relation(fields: [categoryId], references: [id])
+//   categoryId Int // relation scalar field (used in the `@relation` attribute above)
+//   assignedAt DateTime @default(now())
+//   assignedBy String
+
+//   @@id([postId, categoryId])
+// }
