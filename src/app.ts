@@ -10,6 +10,7 @@ import axios from "axios";
 import cors from "cors";
 
 import dotenv from "dotenv";
+import prisma from "./prisma";
 
 const app = express();
 app.use(express.json());
@@ -26,14 +27,13 @@ app.post("/webhook", async (req, res) => {
   // details on WhatsApp text message payload: https://developers.facebook.com/docs/whatsapp/cloud-api/webhooks/payload-examples#text-messages
   const message = req.body.entry?.[0]?.changes[0]?.value?.messages?.[0];
 
-  console.log(message);
-
   // check if the incoming message contains text
   if (message?.type === "text") {
-    console.log("acaaaaa");
     // extract the business number to send the reply from it
     const business_phone_number_id =
       req.body.entry?.[0].changes?.[0].value?.metadata?.phone_number_id;
+
+    console.log(message);
 
     // send a reply message as per the docs here https://developers.facebook.com/docs/whatsapp/cloud-api/reference/messages
     await axios({
