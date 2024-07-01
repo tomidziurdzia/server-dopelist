@@ -44,7 +44,7 @@ app.post("/webhook", async (req, res) => {
       data: {
         messaging_product: "whatsapp",
         to: message.from,
-        text: { body: `Dope created successfully: ${message.text.body}` },
+        text: { body: `Dope created successfully: ${message?.text.body}` },
         context: {
           message_id: message.id, // shows the message as a reply to the original user message
         },
@@ -65,7 +65,7 @@ app.post("/webhook", async (req, res) => {
       },
     });
   }
-  res.send(message.text.body);
+  res.send(message?.text.body);
 });
 
 // accepts GET requests at the /webhook endpoint. You need this URL to setup webhook initially.
