@@ -10,6 +10,7 @@ import axios from "axios";
 import cors from "cors";
 
 import dotenv from "dotenv";
+import prisma from "./prisma";
 
 const app = express();
 app.use(express.json());
@@ -32,8 +33,6 @@ app.post("/webhook", async (req, res) => {
     const business_phone_number_id =
       req.body.entry?.[0].changes?.[0].value?.metadata?.phone_number_id;
 
-    console.log(message);
-
     // send a reply message as per the docs here https://developers.facebook.com/docs/whatsapp/cloud-api/reference/messages
     await axios({
       method: "POST",
@@ -48,6 +47,39 @@ app.post("/webhook", async (req, res) => {
         context: {
           message_id: message.id, // shows the message as a reply to the original user message
         },
+      },
+    });
+
+    const fetchData = async (inputUrl: string) => {
+      const url = `${process.env.API_BASE_URL}${inputUrl}&oembed=false`;
+      const options = {
+        method: "GET",
+        headers: {
+          "x-rapidapi-key": process.env.API_KEY_RAPID!,
+          "x-rapidapi-host": "link-preview4.p.rapidapi.com",
+        },
+      };
+
+      try {
+        const response = await fetch(url, options);
+        const result = await response.json(); // Asumimos que el resultado es JSON
+        //   setDataFromURL(result);
+        return result;
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        return error;
+      }
+    };
+
+    const data = await fetchData(message?.text.body);
+
+    await prisma.dope.create({
+      data: {
+        link: data.url,
+        description: data.description,
+        image: data.cover,
+        name: data.sitename,
+        userId: "777",
       },
     });
 
