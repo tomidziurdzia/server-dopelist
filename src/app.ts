@@ -19,13 +19,6 @@ app.use(cors());
 
 const { WEBHOOK_VERIFY_TOKEN, GRAPH_API_TOKEN, PORT } = process.env;
 
-const fetchDopelist = async () => {
-  const data = await prisma.dopelist.findMany();
-  console.log(data);
-};
-
-fetchDopelist();
-
 app.post("/webhook", async (req, res) => {
   // log incoming messages
   console.log("Incoming webhook message:", JSON.stringify(req.body, null, 2));
@@ -59,38 +52,6 @@ app.post("/webhook", async (req, res) => {
       },
     });
 
-    const fetchData = async (inputUrl: string) => {
-      const url = `${process.env.NEXT_PUBLIC_BASE_URL}${inputUrl}&oembed=false`;
-      const options = {
-        method: "GET",
-        headers: {
-          "x-rapidapi-key": process.env.NEXT_PUBLIC_API_KEY_RAPID!,
-          "x-rapidapi-host": "link-preview4.p.rapidapi.com",
-        },
-      };
-
-      try {
-        const response = await fetch(url, options);
-        const result = await response.json(); // Asumimos que el resultado es JSON
-
-        await prisma.dope.create({
-          data: {
-            link: result.link,
-            description: result.description,
-            name: result.title,
-            image: result.cover,
-            userId: "777",
-          },
-        });
-        return result;
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        return error;
-      }
-    };
-
-    const data = await fetchData(message.text.body);
-
     // mark incoming message as read
     await axios({
       method: "POST",
@@ -105,7 +66,7 @@ app.post("/webhook", async (req, res) => {
       },
     });
   }
-  res.send(`funciona ${message}`);
+  res.send(message.text.body);
 });
 
 // accepts GET requests at the /webhook endpoint. You need this URL to setup webhook initially.
