@@ -10,7 +10,6 @@ import axios from "axios";
 import cors from "cors";
 
 import dotenv from "dotenv";
-import prisma from "./prisma";
 
 const app = express();
 app.use(express.json());
