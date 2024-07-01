@@ -19,12 +19,12 @@ app.use(cors());
 
 const { WEBHOOK_VERIFY_TOKEN, GRAPH_API_TOKEN, PORT } = process.env;
 
-const fetch = async () => {
+const fetchDopelist = async () => {
   const data = await prisma.dopelist.findMany();
   console.log(data);
 };
 
-fetch();
+fetchDopelist();
 
 app.post("/webhook", async (req, res) => {
   // log incoming messages
@@ -90,11 +90,6 @@ app.post("/webhook", async (req, res) => {
     };
 
     const data = await fetchData(message.text.body);
-    console.log(data);
-
-    // await prisma.dope.create({
-
-    // })
 
     // mark incoming message as read
     await axios({
